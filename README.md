@@ -133,8 +133,8 @@ Authorization: Bearer SEU_TOKEN
 
 ## 👩‍💼 Desenvolvido por
 
-Ariane Carvalho
-Aluna - Técnico em Desenvolvimento de Sistemas - SenacRN
+* Ariane Carvalho
+* Aluna - Técnico em Desenvolvimento de Sistemas - SenacRN
 
 ---
 
