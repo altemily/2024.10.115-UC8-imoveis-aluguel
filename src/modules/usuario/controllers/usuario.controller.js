@@ -1,46 +1,100 @@
-const Usuario = require('../models/usuario.model');
-const bcrypt = require('bcryptjs');
+const Usuario = require("../models/usuario.model");
+const bcrypt = require("bcryptjs");
 
 class UsuarioController {
-  static async criar(req, res) {
+
+  static async cadastrar(req, res) {
     try {
-      const { nome, email, senha } = req.body;
+      const { nome, email, senha, role } = req.body;
 
       if (!nome || !email || !senha) {
-        return res.status(400).json({ msg: 'Nome, e-mail e senha são obrigatórios.' });
+        return res
+          .status(400)
+          .json({ msg: "Todos os campos são obrigatórios." });
       }
 
-      const usuarioExiste = await Usuario.findOne({ where: { email } });
-      if (usuarioExiste) {
-        return res.status(400).json({ msg: 'Já existe um usuário cadastrado com esse e-mail.' });
+      const verificaEmail = await Usuario.findOne({ where: { email } });
+      if (verificaEmail) {
+        return res.status(400).json({ msg: "E-mail já cadastrado." });
       }
 
+      // Criptografa senha
       const hash = await bcrypt.hash(senha, 10);
-      const novoUsuario = await Usuario.create({
+
+      await Usuario.create({
         nome,
         email,
-        senha: hash
+        senha: hash,
+        role: role || "cliente", // Default para cliente
       });
 
-      return res.status(201).json({
-        msg: 'Usuário criado com sucesso.',
-        id: novoUsuario.id,
-        nome: novoUsuario.nome,
-        email: novoUsuario.email,
-      });
+      return res.status(201).json({ msg: "Usuário cadastrado com sucesso." });
     } catch (error) {
-      return res.status(500).json({ msg: 'Erro ao criar usuário.', erro: error.message });
+      return res
+        .status(500)
+        .json({ msg: "Erro ao cadastrar usuário.", erro: error.message });
     }
   }
 
-  static async listarTodos(req, res) {
+  static async atualizar(req, res) {
     try {
-      const usuarios = await Usuario.findAll({
-        attributes: ['id', 'nome', 'email']
-      });
-      return res.status(200).json(usuarios);
+      const { id } = req.user;
+      const { nome, email, senha } = req.body;
+
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) {
+        return res.status(404).json({ msg: "Usuário não encontrado." });
+      }
+
+      if (nome) usuario.nome = nome;
+      if (email) usuario.email = email;
+      if (senha) usuario.senha = await bcrypt.hash(senha, 10);
+
+      await usuario.save();
+
+      return res.status(200).json({ msg: "Usuário atualizado com sucesso." });
     } catch (error) {
-      return res.status(500).json({ msg: 'Erro ao listar usuários.', erro: error.message });
+      return res
+        .status(500)
+        .json({ msg: "Erro ao atualizar usuário.", erro: error.message });
+    }
+  }
+
+  static async deletar(req, res) {
+    try {
+      const { id } = req.user;
+
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) {
+        return res.status(404).json({ msg: "Usuário não encontrado." });
+      }
+
+      await usuario.destroy();
+
+      return res.status(200).json({ msg: "Usuário deletado com sucesso." });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msg: "Erro ao deletar usuário.", erro: error.message });
+    }
+  }
+
+  // Perfil do usuário autenticado
+  static async perfil(req, res) {
+    try {
+      // req.usuario vem do middleware de autenticação
+      const { id } = req.user;
+      const usuario = await Usuario.findByPk(id, {
+        attributes: ["id", "nome", "email", "role"],
+      });
+      if (!usuario) {
+        return res.status(404).json({ msg: "Usuário não encontrado." });
+      }
+      return res.status(200).json(usuario);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msg: "Erro ao consultar perfil.", erro: error.message });
     }
   }
 }

@@ -7,7 +7,9 @@ const sequelize = require('./src/config/configDB');
 
 const authRoute = require('./src/modules/autenticacao/routes/autenticacao.routes');
 const usuarioRoute = require('./src/modules/usuario/routes/usuario.routes');
-const imovelRoute = require('./src/modules/imoveis/routes/imovel.routes');
+const imovelRoute = require('./src/modules/imovel/routes/imovel.routes');
+const proprietarioRoute = require('./src/modules/proprietario/routes/proprietario.routes');
+
 
 dotenv.config();
 
@@ -21,9 +23,11 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api', authRoute);
-app.use('/api', usuarioRoute);
-app.use('/api', imovelRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/usuarios', usuarioRoute);
+app.use('/api/imoveis', imovelRoute);
+app.use('/api/proprietarios', proprietarioRoute);
+
 
 const PORTA = process.env.PORTA;
 
