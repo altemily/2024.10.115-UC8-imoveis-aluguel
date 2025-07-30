@@ -28,7 +28,7 @@ const Proprietario = sequelize.define('Proprietario', {
     }
   }
 }, {
-  tableName: 'proprietario',
+  tableName: 'Proprietarios',
   createdAt: 'criado_em',
   updatedAt: 'atualizado_em',
 });

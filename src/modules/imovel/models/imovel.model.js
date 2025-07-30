@@ -56,7 +56,7 @@ const Imovel = sequelize.define('Imovel', {
     },
   },
 }, {
-  tableName: 'imovel',
+  tableName: 'Imoveis',
   createdAt: 'criado_em',
   updatedAt: 'atualizado_em',
 });

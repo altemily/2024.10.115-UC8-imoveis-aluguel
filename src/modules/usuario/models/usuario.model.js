@@ -44,7 +44,7 @@ const Usuario = sequelize.define('Usuario', {
     },
   },
 }, {
-  tableName: "usuario",
+  tableName: "Usuarios",
   createdAt: "criado_em",
   updatedAt: "atualizado_em",
 });
